@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css?family=Teko:300" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:100,300" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>This is probably your postcode</title>
+  <meta name="description" content="Testing the api.postcodes.io API. Give it geolocation permission, and it'll probably tell you your postcode.">
+
+</head>
+<body>
+
+  <div class="container">
+    <div>
+    <div class="intro">
+      <h1>York</h1>
+      <h2>Refuse / Recycling Collection</h2>
+      <ul class="boxes">
+        <li id="collection-1" class="box"></li>
+        <li id="collection-2" class="box"></li>
+        <li id="collection-3" class="box"></li>
+      </ul>
+    </div>
+
+    <script>
+
+    let postCodeSuccess = function(postcode) {
+      const Http = new XMLHttpRequest();
+      const url='https://doitonline.york.gov.uk/BinsApi/EXOR/getwastecollectionsforpostcode?postcode=YO31 1AB' // + postcode;
+      Http.open("GET", url);
+      // Http.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+      Http.send();
+      Http.onreadystatechange=(e)=>{
+        if (Http.readyState==4) {
+          if (Http.status==200) {
+            let json = JSON.parse(Http.responseText);
+
+            if (json.length === 0) {
+              return document.getElementById('collection-2').innerHTML = "<p>You\'re probably not in York</p>";
+            }
+
+            for (let property in json) {
+              let collection = json[property];
+
+              // Only iterate for first address
+              if (property > 0 && json[property].ShortAddress !== json[property - 1].ShortAddress) { break; }
+
+
+              document.getElementById('collection-' + (parseInt(property, 10) + 1)).innerHTML =
+              '<p><strong>' + collection['WasteTypeDescription'] + '</strong></p>' +
+              '<p>Your next collection will be on ' + new Date(parseInt(collection['NextCollection'].substr(6))).toDateString() + '</p>' +
+              '<p>Collection Frequency: ' + collection['CollectionFrequency'] + '</p>'
+            }
+          }
+        }
+      }
+    }
+      
+
+    let geoSuccess = function(position) {
+      // hideNudgeBanner();
+      // We have the location, don't display banner
+      // clearTimeout(nudgeTimeoutId);
+
+      // Do magic with location
+      startPos = position;
+
+      const Http = new XMLHttpRequest();
+      const url='https://api.postcodes.io/postcodes';
+      Http.open("POST", url);
+      Http.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+      Http.send(JSON.stringify({
+        "geolocations" : [{
+        "longitude":  position.coords.longitude,
+        "latitude": position.coords.latitude
+        }]
+      }));
+      Http.onreadystatechange=(e)=>{
+        if (Http.readyState==4 && Http.status==200) {
+          let json = JSON.parse(Http.responseText);
+          postCodeSuccess(json.result[0].result[0].postcode);
+        }
+      }
+    };
+
+    var geoError = function(error) {
+      switch(error.code) {
+        case error.TIMEOUT:
+          // The user didn't accept the callout
+          // showNudgeBanner();
+          break;
+      }
+    };
+
+    navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
+
+  </script>
+  
+</body>
+</html>

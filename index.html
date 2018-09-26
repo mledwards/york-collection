@@ -1,36 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <meta charset="UTF-8">
-  <link href="https://fonts.googleapis.com/css?family=Teko:300" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:100,300" rel="stylesheet">
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Teko:500" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://spin-up.io/css/reset.css">
+  <link rel="stylesheet" href="https://spin-up.io/css/brand.css">
   <link rel="stylesheet" href="main.css">
+
+  <!-- Fav icon -->
+  <link rel="shortcut icon" type="image/png" href="https://spin-up.io/img/favicon.png">
+
+  <!-- Viewport -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>York refuse / recycling based on current location</title>
   <meta name="description" content="Testing the api.postcodes.io API. Give it geolocation permission, and it'll probably tell you your postcode.">
-
 </head>
 <body>
 
   <div class="container">
-
-    <div class="intro">
+    <div class="full-width">
       <h1>York</h1>
       <h2>Refuse / Recycling Collection</h2>
-      <ul class="boxes">
-        <li id="collection-1" class="box"></li>
-        <li id="collection-2" class="box"></li>
-        <li id="collection-3" class="box"></li>
-      </ul>
+      <div class="intro">
+        <ul class="boxes">
+          <li id="collection-1" class="box"></li>
+          <li id="collection-2" class="box"></li>
+          <li id="collection-3" class="box"></li>
+        </ul>
+      </div>
     </div>
+  </div>
 
-    <div target="_blank" class="built-by">Built by <a href="https://spin-up.io" class="teko">Spin Up</a></div>    
+  <div target="_blank" class="built-by">Built by <a href="https://spin-up.io" class="teko">Spin Up</a></div>    
 
-    <script>
+  <script>
 
     let postCodeSuccess = function(postcode) {
       const Http = new XMLHttpRequest();
-      const url='https://doitonline.york.gov.uk/BinsApi/EXOR/getwastecollectionsforpostcode?postcode=' + postcode;
+      const url='https://doitonline.york.gov.uk/BinsApi/EXOR/getwastecollectionsforpostcode?postcode=YO1+6FA';// + postcode;
       Http.open("GET", url);
       // Http.setRequestHeader("Content-Type", "application/json; charset=utf-8");
       Http.send();
